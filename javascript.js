@@ -230,7 +230,8 @@ document.addEventListener("DOMContentLoaded", () => {
       qty: 1
     });
      }
-    localStorage.setItem("cart", JSON.stringify(cart));
+  alert("Added to cart")
+  localStorage.setItem("cart", JSON.stringify(cart));
   updateCart();
   btn.innerText = "Added";
   btn.disabled = true;
@@ -284,6 +285,5 @@ window.changeQty = function(id, value) {
     cart = cart.filter(p => p.id != id);
    }
    updateCart();
-
 };
   ShowProducts(products);
