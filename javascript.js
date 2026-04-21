@@ -211,6 +211,9 @@ function toggleCart() {
   document.getElementById("cart").classList.toggle("translate-x-full");
 }
 const CountEl = document.getElementById("cart-count");
+function updateCartCount() {
+  CountEl.innerText = cart.length;
+}
 
 document.addEventListener("DOMContentLoaded", () => {
   let cart = JSON.parse(localStorage.getItem("cart")) || [];
@@ -220,11 +223,16 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if (cart.find((item) => item.id === id) || cart.includes(id)) {
       btn.innerText = "Added";
+      btn.innerText = "Added";
+      btn.classList.add("cursor-not-allowed");
+      btn.classList.add("opacity-50");
+      btn.disabled = true;
     } else {
       btn.innerText = "Add to Cart";
     }
   });
   updateCart();
+  updateCartCount();
 });
 let cart = JSON.parse(localStorage.getItem("cart")) || [];
 document.addEventListener("click", function (e) {
@@ -233,7 +241,8 @@ document.addEventListener("click", function (e) {
   let id = btn.dataset.id;
   let item = products.find((p) => p.id == id);
   if (!item) return;
-  let exists = cart.find((p) => p.id == id);
+  let exists = cart.find((item) => item.id === id);
+
   if (exists) {
     exists.qty += 1;
   } else {
@@ -245,7 +254,10 @@ document.addEventListener("click", function (e) {
   alert("Added to cart");
   localStorage.setItem("cart", JSON.stringify(cart));
   updateCart();
+  updateCartCount();
   btn.innerText = "Added";
+  btn.classList.add("cursor-not-allowed");
+  btn.classList.add("opacity-50");
   btn.disabled = true;
 });
 function updateCart() {
@@ -270,6 +282,7 @@ function updateCart() {
         <div class="flex gap-2">
           <button onclick="changeQty(${item.id}, -1)" class="bg-gray-300 px-2 rounded">-</button>
           <button onclick="changeQty(${item.id}, 1)" class="bg-gray-300 px-2 rounded">+</button>
+           <button onclick="removeItem(${item.id})" class="bg-gray-300 px-2 cursor-pointer rounded">x</button>
         </div>
 
       </div>
@@ -278,9 +291,14 @@ function updateCart() {
 
   totalEl.innerText = total;
 
-  CountEl.innerText = totalQty;
-
   localStorage.setItem("cart", JSON.stringify(cart));
+}
+// remove Items
+function removeItem(id) {
+  cart = cart.filter((item) => item.id !== id);
+  localStorage.setItem("cart", JSON.stringify(cart));
+  updateCart();
+  updateCartCount();
 }
 window.changeQty = function (id, value) {
   let item = cart.find((p) => p.id == id);
@@ -295,5 +313,6 @@ window.changeQty = function (id, value) {
     cart = cart.filter((p) => p.id != id);
   }
   updateCart();
+  updateCartCount();
 };
 ShowProducts(products);
