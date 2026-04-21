@@ -91,7 +91,7 @@ function ShowProducts(productsli) {
     Add to Cart
   </button>
 `;
-      card.querySelector('img').onclick = () => openModal(product);
+      card.querySelector("img").onclick = () => openModal(product);
       fragment.appendChild(card);
     });
     container.appendChild(fragment);
@@ -108,33 +108,34 @@ function openModal(product) {
   modal.classList.remove("hidden");
   modal.classList.add("flex");
   document.querySelector("#modal .add-to-cart").dataset.id = product.id;
-   document.querySelector("#modal .add-to-cart").addEventListener("click", function (e) {
-    e.stopPropagation();
+  document
+    .querySelector("#modal .add-to-cart")
+    .addEventListener("click", function (e) {
+      e.stopPropagation();
 
-    let id = this.dataset.id;
-    let item = products.find(p => p.id == id);
+      let id = this.dataset.id;
+      let item = products.find((p) => p.id == id);
 
-    if (!item) return;
+      if (!item) return;
 
-    let exists = cart.find(p => p.id == id);
+      let exists = cart.find((p) => p.id == id);
 
-    if (exists) {
-      item.qty += 1;
-    }else{
-      cart.push({
-        ...item,
-        qty: 1
-      });
+      if (exists) {
+        item.qty += 1;
+      } else {
+        cart.push({
+          ...item,
+          qty: 1,
+        });
 
-      alert("Added to cart");
-    }
+        alert("Added to cart");
+      }
 
-    localStorage.setItem('cart',JSON.stringify(cart));
-    this.innerText = "Added";
-    this.disabled = true;
-    updateCart();
-  })
-
+      localStorage.setItem("cart", JSON.stringify(cart));
+      this.innerText = "Added";
+      this.disabled = true;
+      updateCart();
+    });
 }
 
 // pop up close
@@ -185,89 +186,88 @@ function sort(value) {
     });
   } else if (value === "all") {
     allProducts = [...products];
-  };
-   const searchIn = document.getElementById("searchInput");
+  }
+  const searchIn = document.getElementById("searchInput");
   searchIn.value = "";
   ShowProducts(allProducts);
 }
-const selectedCat = document.getElementById('Categories');
+const selectedCat = document.getElementById("Categories");
 function Category(catvalue) {
   let filetred = [...products];
   if (catvalue.value !== "All") {
     filetred = products.filter(
       (product) => product.category === selectedCat.value,
     );
-  }else{
+  } else {
     filetred = products;
   }
-   const searchIn = document.getElementById("searchInput");
+  const searchIn = document.getElementById("searchInput");
   searchIn.value = "";
   allProducts = filetred;
   ShowProducts(allProducts);
 }
 
- function toggleCart() {
-    document.getElementById('cart').classList.toggle('translate-x-full');
-  }
- const CountEl = document.getElementById('cart-count');
+function toggleCart() {
+  document.getElementById("cart").classList.toggle("translate-x-full");
+}
+const CountEl = document.getElementById("cart-count");
 
 document.addEventListener("DOMContentLoaded", () => {
-    let cart = JSON.parse(localStorage.getItem("cart")) || [];
+  let cart = JSON.parse(localStorage.getItem("cart")) || [];
 
-  document.querySelectorAll(".add-to-cart").forEach(btn => {
+  document.querySelectorAll(".add-to-cart").forEach((btn) => {
     let id = Number(btn.dataset.id);
 
-    if (cart.some(item => item.id === id) || cart.includes(id)) {
+    if (cart.find((item) => item.id === id) || cart.includes(id)) {
       btn.innerText = "Added";
-    }else{
-      btn.innerText = "Add to Cart"
+    } else {
+      btn.innerText = "Add to Cart";
     }
   });
   updateCart();
 });
-let cart = JSON.parse(localStorage.getItem("cart")) || [];  
-  document.addEventListener('click', function (e) {
-     const btn = e.target.closest(".add-to-cart");
-     if (!btn) return;
-     let id = btn.dataset.id;
-     let item = products.find(p => p.id == id);
-     if (!item) return;
-     let exists = cart.find(p => p.id == id);
-     if (exists) {
-        exists.qty += 1;
-     }else{
+let cart = JSON.parse(localStorage.getItem("cart")) || [];
+document.addEventListener("click", function (e) {
+  const btn = e.target.closest(".add-to-cart");
+  if (!btn) return;
+  let id = btn.dataset.id;
+  let item = products.find((p) => p.id == id);
+  if (!item) return;
+  let exists = cart.find((p) => p.id == id);
+  if (exists) {
+    exists.qty += 1;
+  } else {
     cart.push({
       ...item,
-      qty: 1
+      qty: 1,
     });
-     }
-  alert("Added to cart")
+  }
+  alert("Added to cart");
   localStorage.setItem("cart", JSON.stringify(cart));
   updateCart();
   btn.innerText = "Added";
   btn.disabled = true;
 });
 function updateCart() {
+  const cartItems = document.getElementById("cart-items");
+  const totalEl = document.getElementById("total");
 
-  const cartItems = document.getElementById('cart-items');
-  const totalEl = document.getElementById('total');
-
-  cartItems.innerHTML = '';
+  cartItems.innerHTML = "";
   let total = 0;
   let totalQty = 0;
 
-  cart.forEach(item => {
-    total += item.price.replace('$','') * item.qty;
+  cart.forEach((item) => {
+    total += item.price.replace("$", "") * item.qty;
     totalQty += item.qty;
-    cartItems.innerHTML =`
-     <div class="flex justify-between items-center border p-2 rounded mb-2">
+    cartItems.innerHTML += `
+      <div class="flex justify-between items-center border p-2 rounded mb-2">
         
         <div>
           <p class="font-bold">${item.name}</p>
           <p>${item.price} x ${item.qty}</p>
         </div>
 
-         <div class="flex gap-2">
+        <div class="flex gap-2">
           <button onclick="changeQty(${item.id}, -1)" class="bg-gray-300 px-2 rounded">-</button>
           <button onclick="changeQty(${item.id}, 1)" class="bg-gray-300 px-2 rounded">+</button>
         </div>
@@ -282,19 +282,18 @@ function updateCart() {
 
   localStorage.setItem("cart", JSON.stringify(cart));
 }
-window.changeQty = function(id, value) {
+window.changeQty = function (id, value) {
+  let item = cart.find((p) => p.id == id);
 
-   let item = cart.find(p => p.id == id);
-
-   if (!item) {
+  if (!item) {
     return;
-   }else{
+  } else {
     item.qty += value;
-   }
+  }
 
-   if (item.qty <= 0) {
-    cart = cart.filter(p => p.id != id);
-   }
-   updateCart();
+  if (item.qty <= 0) {
+    cart = cart.filter((p) => p.id != id);
+  }
+  updateCart();
 };
-  ShowProducts(products);
+ShowProducts(products);
