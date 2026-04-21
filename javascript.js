@@ -132,6 +132,7 @@ function openModal(product) {
     localStorage.setItem('cart',JSON.stringify(cart));
     this.innerText = "Added";
     this.disabled = true;
+    updateCart();
   })
 
 }
@@ -210,11 +211,21 @@ function Category(catvalue) {
   }
  const CountEl = document.getElementById('cart-count');
 
-let cart = JSON.parse(localStorage.getItem("cart")) || [];
 document.addEventListener("DOMContentLoaded", () => {
+    let cart = JSON.parse(localStorage.getItem("cart")) || [];
+
+  document.querySelectorAll(".add-to-cart").forEach(btn => {
+    let id = Number(btn.dataset.id);
+
+    if (cart.some(item => item.id === id) || cart.includes(id)) {
+      btn.innerText = "Added";
+    }else{
+      btn.innerText = "Add to Cart"
+    }
+  });
   updateCart();
 });
-  
+let cart = JSON.parse(localStorage.getItem("cart")) || [];  
   document.addEventListener('click', function (e) {
      const btn = e.target.closest(".add-to-cart");
      if (!btn) return;
