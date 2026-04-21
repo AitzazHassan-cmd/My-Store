@@ -248,6 +248,9 @@ function updateCart() {
 }
 // remove Items
 function removeItem(id) {
+ let Confirmed = confirm("Are you sure you want to remove this item?");
+
+  if (!Confirmed) return; 
   cart = cart.filter((item) => item.id !== id);
   localStorage.setItem("cart", JSON.stringify(cart));
   updateCart();
