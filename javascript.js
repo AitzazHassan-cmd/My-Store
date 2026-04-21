@@ -272,16 +272,18 @@ function updateCart() {
 }
 window.changeQty = function(id, value) {
 
-  let item = cart.find(p => p.id == id);
+   let item = cart.find(p => p.id == id);
 
-  if (!item) return;
+   if (!item) {
+    return;
+   }else{
+    item.qty += value;
+   }
 
-  item.qty += value;
-
-  if (item.qty <= 0) {
+   if (item.qty <= 0) {
     cart = cart.filter(p => p.id != id);
-  }
+   }
+   updateCart();
 
-  updateCart();
 };
   ShowProducts(products);
