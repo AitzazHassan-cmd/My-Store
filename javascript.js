@@ -65,9 +65,8 @@ let products = [
 ];
 
 let allProducts = [...products];
-
+const container = document.getElementById("container");
 function ShowProducts(productsli) {
-  let container = document.getElementById("container");
   let fragment = document.createDocumentFragment();
   container.innerHTML = "";
 
@@ -97,59 +96,48 @@ function ShowProducts(productsli) {
   }
 }
 //search trem
-let searchInput = document.getElementById("searchInput");
-const notFound = document.getElementById("notFound");
+const searchInput = document.getElementById("searchInput");
 
-searchInput.addEventListener("keyup", function () {
+function searchProducts() {
   const value = searchInput.value.toLowerCase();
-  const Allproducts = document.querySelectorAll(".one");
 
-  let found = false;
-  Allproducts.forEach((product) => {
-    const name = product.querySelector(".product-name").innerText.toLowerCase();
+  const filtered = products.filter(product =>
+    product.name.toLowerCase().includes(value)
+  );
 
-    if (name.includes(value)) {
-      product.classList.remove("hidden");
-      found = true;
-    } else {
-      product.classList.add("hidden");
-    }
-  });
-
-  if (found) {
-    notFound.classList.add("hidden");
+  if (filtered.length > 0) {
+    ShowProducts(filtered); 
   } else {
-    notFound.classList.remove("hidden");
+    container.innerHTML = `
+      <p class="text-center font-bold text-2xl">No Product Found</p>
+    `;
   }
-  updateCartButtons();
-});
+}
+
+searchInput.addEventListener("keyup", searchProducts);
 
 function sort(value) {
-  if (value === "Low-to-Heigh") {
-    allProducts.sort((a, b) => {
-      const priceA = Number(a.price.replace("$", ""));
-      const priceB = Number(b.price.replace("$", ""));
-      return priceA - priceB;
-    });
-  } else if (value === "Heigh-to-Low") {
-    allProducts.sort((a, b) => {
-      const priceA = Number(a.price.replace("$", ""));
-      const priceB = Number(b.price.replace("$", ""));
-      return priceB - priceA;
-    });
-  } else if (value === "all") {
-    allProducts = [...products];
-  }
   const searchIn = document.getElementById("searchInput");
   searchIn.value = "";
+
+  if (value === "all") {
+    allProducts = [...products];
+  } else {
+    const dir = value === "Low-to-Heigh" ? 1 : -1;
+
+    allProducts.sort((a, b) =>
+      (parseFloat(a.price.replace("$", "")) -
+       parseFloat(b.price.replace("$", ""))) * dir
+    );
+  }
+
   ShowProducts(allProducts);
   updateCartButtons();
 }
 const selectedCat = document.getElementById("Categories");
 function Category(catvalue) {
-  let filetred = [...products];
   if (catvalue.value !== "All") {
-    filetred = products.filter(
+    allProducts = products.filter(
       (product) => product.category === selectedCat.value,
     );
   } else {
@@ -157,21 +145,19 @@ function Category(catvalue) {
   }
   const searchIn = document.getElementById("searchInput");
   searchIn.value = "";
-  allProducts = filetred;
   ShowProducts(allProducts);
   updateCartButtons();
 }
-
 function toggleCart() {
   document.getElementById("cart").classList.toggle("translate-x-full");
 }
-const CountEl = document.getElementById("cart-count");
+
 function updateCartCount() {
-  CountEl.innerText = cart.length;
+ document.getElementById("cart-count")
+ .innerText = cart.length;
 }
 function updateCartButtons() {
-  let cart = JSON.parse(localStorage.getItem("cart")) || [];
-
+  let cart = JSON.parse(localStorage.getItem("cart"));
   document.querySelectorAll(".add-to-cart").forEach((btn) => {
     let id = Number(btn.dataset.id);
 
@@ -187,73 +173,65 @@ document.addEventListener("DOMContentLoaded", () => {
   updateCart();
   updateCartCount();
 });
-let cart = JSON.parse(localStorage.getItem("cart")) || [];
-document.addEventListener("click", function (e) {
+let cart = JSON.parse(localStorage.getItem("cart"));
+document.addEventListener("click", e => {
   const btn = e.target.closest(".add-to-cart");
   if (!btn) return;
-  let id = btn.dataset.id;
-  let item = products.find((p) => p.id == id);
-  if (!item) return;
-  let exists = cart.find((item) => item.id === id);
 
-  if (exists) {
-    exists.qty += 1;
-  } else {
-    cart.push({
-      ...item,
-      qty: 1,
-    });
-  }
-  alert("Added to cart");
+  const item = products.find(p => p.id == btn.dataset.id);
+  if (!item) return;
+
+  const exists = cart.find(i => i.id == btn.dataset.id);
+
+  exists ? exists.qty++ : cart.push({ ...item, qty: 1 });
+
   localStorage.setItem("cart", JSON.stringify(cart));
   updateCart();
   updateCartCount();
-  btn.innerText = "Added";
-  btn.classList.add("cursor-not-allowed");
-  btn.classList.add("opacity-50");
-  btn.disabled = true;
+  updateCartButtons();
+  alert("Added to cart");
 });
 function updateCart() {
   const cartItems = document.getElementById("cart-items");
   const totalEl = document.getElementById("total");
 
   cartItems.innerHTML = "";
-  let total = 0;
-  let totalQty = 0;
 
-  cart.forEach((item) => {
-    total += item.price.replace("$", "") * item.qty;
+  let total = 0, totalQty = 0;
+
+  cart.forEach(item => {
+    const price = item.price.replace("$", "");
+
+    total += price * item.qty;
     totalQty += item.qty;
+
     cartItems.innerHTML += `
       <div class="flex justify-between items-center border p-2 rounded mb-2">
-        
         <div>
           <p class="font-bold">${item.name}</p>
           <p>${item.price} x ${item.qty}</p>
         </div>
 
         <div class="flex gap-2">
-          <button onclick="changeQty(${item.id}, -1)" class="bg-gray-300 px-2 rounded">-</button>
-          <button onclick="changeQty(${item.id}, 1)" class="bg-gray-300 px-2 rounded">+</button>
-           <button onclick="removeItem(${item.id})" class="bg-gray-300 px-2 cursor-pointer rounded">x</button>
+          <button onclick="changeQty(${item.id},-1)" class="bg-gray-300 px-2 rounded">-</button>
+          <button onclick="changeQty(${item.id},1)" class="bg-gray-300 px-2 rounded">+</button>
+          <button onclick="removeItem(${item.id})" class="bg-gray-300 px-2 rounded">x</button>
         </div>
-
       </div>
     `;
   });
 
   totalEl.innerText = total;
-
   localStorage.setItem("cart", JSON.stringify(cart));
 }
 // remove Items
 function removeItem(id) {
- let Confirmed = confirm("Are you sure you want to remove this item?");
+  if (!confirm("Are you sure you want to remove this item?")) return;
 
-  if (!Confirmed) return; 
-  cart = cart.filter((item) => item.id !== id);
+  cart = cart.filter(i => i.id !== id);
   localStorage.setItem("cart", JSON.stringify(cart));
-  let btn = document.querySelector(`.add-to-cart[data-id="${id}"]`);
+
+  const btn = document.querySelector(`.add-to-cart[data-id="${id}"]`);
   if (btn) {
     btn.innerText = "Add to cart";
     btn.classList.remove("cursor-not-allowed", "opacity-50");
@@ -264,13 +242,11 @@ function removeItem(id) {
 }
 window.changeQty = function (id, value) {
   let item = cart.find((p) => p.id == id);
-
   if (!item) {
     return;
   } else {
     item.qty += value;
   }
-
   if (item.qty <= 0) {
     cart = cart.filter((p) => p.id != id);
   }
