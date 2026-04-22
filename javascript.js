@@ -253,6 +253,12 @@ function removeItem(id) {
   if (!Confirmed) return; 
   cart = cart.filter((item) => item.id !== id);
   localStorage.setItem("cart", JSON.stringify(cart));
+  let btn = document.querySelector(`.add-to-cart[data-id="${id}"]`);
+  if (btn) {
+    btn.innerText = "Add to cart";
+    btn.classList.remove("cursor-not-allowed", "opacity-50");
+    btn.disabled = false;
+  }
   updateCart();
   updateCartCount();
 }
