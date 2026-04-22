@@ -153,7 +153,7 @@ function Category(catvalue) {
       (product) => product.category === selectedCat.value,
     );
   } else {
-    filetred = products;
+     filetred = [...products];
   }
   const searchIn = document.getElementById("searchInput");
   searchIn.value = "";
