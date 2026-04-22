@@ -97,14 +97,11 @@ function ShowProducts(productsli) {
 }
 //search trem
 const searchInput = document.getElementById("searchInput");
-
-function searchProducts() {
+searchInput.addEventListener("keyup", function () {
   const value = searchInput.value.toLowerCase();
-
   const filtered = products.filter(product =>
     product.name.toLowerCase().includes(value)
   );
-
   if (filtered.length > 0) {
     ShowProducts(filtered); 
   } else {
@@ -112,22 +109,18 @@ function searchProducts() {
       <p class="text-center font-bold text-2xl">No Product Found</p>
     `;
   }
-}
-
-searchInput.addEventListener("keyup", searchProducts);
-
+  updateCartButtons();
+});
 function sort(value) {
   const searchIn = document.getElementById("searchInput");
   searchIn.value = "";
-
   if (value === "all") {
     allProducts = [...products];
   } else {
     const dir = value === "Low-to-Heigh" ? 1 : -1;
-
     allProducts.sort((a, b) =>
-      (parseFloat(a.price.replace("$", "")) -
-       parseFloat(b.price.replace("$", ""))) * dir
+      (Number(a.price.replace("$", "")) -
+       Number(b.price.replace("$", ""))) * dir
     );
   }
 
@@ -151,15 +144,13 @@ function Category(catvalue) {
 function toggleCart() {
   document.getElementById("cart").classList.toggle("translate-x-full");
 }
-
 function updateCartCount() {
- document.getElementById("cart-count")
- .innerText = cart.length;
+ document.getElementById("cart-count").innerText = cart.length;
 }
 function updateCartButtons() {
   let cart = JSON.parse(localStorage.getItem("cart"));
   document.querySelectorAll(".add-to-cart").forEach((btn) => {
-    let id = Number(btn.dataset.id);
+ let id = Number(btn.dataset.id);
 
     if (cart.includes(id) || cart.find(item => item.id === id)) {
       btn.innerText = "Added";
@@ -177,14 +168,10 @@ let cart = JSON.parse(localStorage.getItem("cart"));
 document.addEventListener("click", e => {
   const btn = e.target.closest(".add-to-cart");
   if (!btn) return;
-
   const item = products.find(p => p.id == btn.dataset.id);
   if (!item) return;
-
   const exists = cart.find(i => i.id == btn.dataset.id);
-
   exists ? exists.qty++ : cart.push({ ...item, qty: 1 });
-
   localStorage.setItem("cart", JSON.stringify(cart));
   updateCart();
   updateCartCount();
@@ -194,11 +181,8 @@ document.addEventListener("click", e => {
 function updateCart() {
   const cartItems = document.getElementById("cart-items");
   const totalEl = document.getElementById("total");
-
   cartItems.innerHTML = "";
-
   let total = 0, totalQty = 0;
-
   cart.forEach(item => {
     const price = item.price.replace("$", "");
 
@@ -213,9 +197,9 @@ function updateCart() {
         </div>
 
         <div class="flex gap-2">
-          <button onclick="changeQty(${item.id},-1)" class="bg-gray-300 px-2 rounded">-</button>
-          <button onclick="changeQty(${item.id},1)" class="bg-gray-300 px-2 rounded">+</button>
-          <button onclick="removeItem(${item.id})" class="bg-gray-300 px-2 rounded">x</button>
+          <button onclick="changeQty(${item.id},-1)" class="bg-gray-300 text-sm px-1 rounded"><i class="fa-solid fa-minus"></i></button>
+          <button onclick="changeQty(${item.id},1)" class="bg-gray-300 text-sm px-1 rounded"><i class="fa-solid fa-plus"></i></button>
+          <button onclick="removeItem(${item.id})" class="bg-gray-300 text-sm px-1 rounded"><i class="fa-solid fa-xmark"></i></button>
         </div>
       </div>
     `;
