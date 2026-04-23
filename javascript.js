@@ -2,6 +2,7 @@ document.addEventListener("DOMContentLoaded", () => {
   updateCartButtons();
   AddToCart();
   updateCartCount();
+ ShowProducts(products);
 });
 var cart = JSON.parse(localStorage.getItem("cart") || 0 );
 let allProducts = [...products];
@@ -9,10 +10,8 @@ const CONTAINER = document.getElementById("container");
 function ShowProducts(productsli) {
   let fragment = document.createDocumentFragment();
   CONTAINER.innerHTML = "";
-
-  if (productsli.length === 0) {
-    notFound(CONTAINER);
-  } else {
+  productsli.length === 0 ?  notFound(CONTAINER) 
+      : 
     productsli.forEach((product) => {
       const CARD = document.createElement("div");
       CARD.dataset.id = product.id;
@@ -33,7 +32,7 @@ function ShowProducts(productsli) {
     });
     CONTAINER.appendChild(fragment);
   }
-}
+
 //search trem
 const SEARCHIP = document.getElementById("searchInput");
 SEARCHIP.addEventListener("keyup", function () {
@@ -41,11 +40,7 @@ SEARCHIP.addEventListener("keyup", function () {
   const FILTERED = products.filter((product) =>
     product.name.toLowerCase().includes(VALUE),
   );
-  if (FILTERED.length > 0) {
-    ShowProducts(FILTERED);
-  } else {
-    notFound(CONTAINER);
-  }
+  FILTERED.length > 0 ? ShowProducts(FILTERED) :  notFound(CONTAINER);
   updateCartButtons();
 });
 function notFound(CONTAINER) {
@@ -78,14 +73,9 @@ function emptySearch() {
    SEARCHIPUNT.value = "";
 }
 function Category(value) {
-  if (value !== "All") {
-    allProducts = products.filter(
+ value !== "All" ? allProducts = products.filter(
       product => product.category === value
-    );
-  } else {
-    allProducts = [...products];
-  }
-
+ ) :  allProducts = [...products];
   hello();
 }
 
@@ -171,23 +161,21 @@ window.changeQty = function (id, value) {
   AddToCart();
   updateCartCount();
 };
-ShowProducts(products);
 // Difference between let var const
 // VAR
 // var x = 10;
-// var x = 20;  (redeclare)
-// x = 30;  (update)
+// var x = 20;  redeclare
+// x = 30;  update
 
 // LET
 
 // let x = 10;
-// // let x = 20; (can't redeclare)
-// x = 30; // (update)
+// // let x = 20; can't redeclare
+// x = 30; // update
 
 
 //  CONST
 
 // const x = 10;
-// const x = 20;  Error (can't redeclare)
-// x = 30;  Error (can't update)
-
+// const x = 20;  Error can't redeclare
+// x = 30;  Error can't update
