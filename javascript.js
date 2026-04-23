@@ -2,7 +2,6 @@ document.addEventListener("DOMContentLoaded", () => {
   updateCartButtons();
   AddToCart();
   updateCartCount();
- ShowProducts(products);
 });
 var cart = JSON.parse(localStorage.getItem("cart") || 0 );
 let allProducts = [...products];
@@ -10,8 +9,9 @@ const CONTAINER = document.getElementById("container");
 function ShowProducts(productsli) {
   let fragment = document.createDocumentFragment();
   CONTAINER.innerHTML = "";
-  productsli.length === 0 ?  notFound(CONTAINER) 
-      : 
+  if (productsli.length === 0) {
+    notFound(CONTAINER);
+  } else {
     productsli.forEach((product) => {
       const CARD = document.createElement("div");
       CARD.dataset.id = product.id;
@@ -32,7 +32,7 @@ function ShowProducts(productsli) {
     });
     CONTAINER.appendChild(fragment);
   }
-
+}
 //search trem
 const SEARCHIP = document.getElementById("searchInput");
 SEARCHIP.addEventListener("keyup", function () {
@@ -40,7 +40,11 @@ SEARCHIP.addEventListener("keyup", function () {
   const FILTERED = products.filter((product) =>
     product.name.toLowerCase().includes(VALUE),
   );
-  FILTERED.length > 0 ? ShowProducts(FILTERED) :  notFound(CONTAINER);
+  if (FILTERED.length > 0) {
+    ShowProducts(FILTERED);
+  } else {
+    notFound(CONTAINER);
+  }
   updateCartButtons();
 });
 function notFound(CONTAINER) {
@@ -73,9 +77,14 @@ function emptySearch() {
    SEARCHIPUNT.value = "";
 }
 function Category(value) {
- value !== "All" ? allProducts = products.filter(
+  if (value !== "All") {
+    allProducts = products.filter(
       product => product.category === value
- ) :  allProducts = [...products];
+    );
+  } else {
+    allProducts = [...products];
+  }
+
   hello();
 }
 
@@ -161,6 +170,7 @@ window.changeQty = function (id, value) {
   AddToCart();
   updateCartCount();
 };
+ShowProducts(products);
 // Difference between let var const
 // VAR
 // var x = 10;
