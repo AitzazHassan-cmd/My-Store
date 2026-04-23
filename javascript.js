@@ -16,7 +16,7 @@ function ShowProducts(productsli) {
       const CARD = document.createElement("div");
       CARD.dataset.id = product.id;
       CARD.className =
-        "one bg-white p-4 rounded shadow cursor-pointer product hover:translate-y-[-8px] transition-all duration-150";
+        "one bg-white p-4 rounded shadow cursor-pointer product";
       CARD.innerHTML = `
       <img src="${product.Image}" class="w-full mb-3 size-48 object-cover">
      <h2 class="text-lg font-bold product-name">${product.name}</h2>
