@@ -63,7 +63,6 @@ let products = [
     Image: "images/shirts.jpg",
   },
 ];
-
 let allProducts = [...products];
 const container = document.getElementById("container");
 function ShowProducts(productsli) {
@@ -99,11 +98,11 @@ function ShowProducts(productsli) {
 const searchInput = document.getElementById("searchInput");
 searchInput.addEventListener("keyup", function () {
   const value = searchInput.value.toLowerCase();
-  const filtered = products.filter(product =>
-    product.name.toLowerCase().includes(value)
+  const filtered = products.filter((product) =>
+    product.name.toLowerCase().includes(value),
   );
   if (filtered.length > 0) {
-    ShowProducts(filtered); 
+    ShowProducts(filtered);
   } else {
     container.innerHTML = `
       <p class="text-center font-bold text-2xl">No Product Found</p>
@@ -112,20 +111,24 @@ searchInput.addEventListener("keyup", function () {
   updateCartButtons();
 });
 function sort(value) {
-  const searchIn = document.getElementById("searchInput");
-  searchIn.value = "";
+  emptySearch();
   if (value === "all") {
     allProducts = [...products];
   } else {
     const dir = value === "Low-to-Heigh" ? 1 : -1;
-    allProducts.sort((a, b) =>
-      (Number(a.price.replace("$", "")) -
-       Number(b.price.replace("$", ""))) * dir
+    allProducts.sort(
+      (a, b) =>
+        (Number(a.price.replace("$", "")) - Number(b.price.replace("$", ""))) *
+        dir,
     );
   }
 
   ShowProducts(allProducts);
   updateCartButtons();
+}
+function emptySearch() {
+   const searchIn = document.getElementById("searchInput");
+   searchIn.value = "";
 }
 const selectedCat = document.getElementById("Categories");
 function Category(catvalue) {
@@ -134,10 +137,9 @@ function Category(catvalue) {
       (product) => product.category === selectedCat.value,
     );
   } else {
-     filetred = [...products];
+    filetred = [...products];
   }
-  const searchIn = document.getElementById("searchInput");
-  searchIn.value = "";
+  emptySearch();
   ShowProducts(allProducts);
   updateCartButtons();
 }
@@ -145,14 +147,13 @@ function toggleCart() {
   document.getElementById("cart").classList.toggle("translate-x-full");
 }
 function updateCartCount() {
- document.getElementById("cart-count").innerText = cart.length;
+  document.getElementById("cart-count").innerText = cart.length;
 }
 function updateCartButtons() {
   let cart = JSON.parse(localStorage.getItem("cart"));
   document.querySelectorAll(".add-to-cart").forEach((btn) => {
- let id = Number(btn.dataset.id);
-
-    if (cart.includes(id) || cart.find(item => item.id === id)) {
+    let id = Number(btn.dataset.id);
+    if (cart.includes(id) || cart.find((item) => item.id === id)) {
       btn.innerText = "Added";
       btn.classList.add("cursor-not-allowed", "opacity-50");
       btn.disabled = true;
@@ -165,12 +166,12 @@ document.addEventListener("DOMContentLoaded", () => {
   updateCartCount();
 });
 let cart = JSON.parse(localStorage.getItem("cart"));
-document.addEventListener("click", e => {
+document.addEventListener("click", (e) => {
   const btn = e.target.closest(".add-to-cart");
   if (!btn) return;
-  const item = products.find(p => p.id == btn.dataset.id);
+  const item = products.find((p) => p.id == btn.dataset.id);
   if (!item) return;
-  const exists = cart.find(i => i.id == btn.dataset.id);
+  const exists = cart.find((i) => i.id == btn.dataset.id);
   exists ? exists.qty++ : cart.push({ ...item, qty: 1 });
   localStorage.setItem("cart", JSON.stringify(cart));
   updateCart();
@@ -182,20 +183,17 @@ function updateCart() {
   const cartItems = document.getElementById("cart-items");
   const totalEl = document.getElementById("total");
   cartItems.innerHTML = "";
-  let total = 0, totalQty = 0;
-  cart.forEach(item => {
-    const price = item.price.replace("$", "");
-
+  let total = 0,totalQty = 0;
+  cart.forEach((item) => {
+  const price = item.price.replace("$", "");
     total += price * item.qty;
     totalQty += item.qty;
-
     cartItems.innerHTML += `
       <div class="flex justify-between items-center border p-2 rounded mb-2">
         <div>
           <p class="font-bold">${item.name}</p>
           <p>${item.price} x ${item.qty}</p>
         </div>
-
         <div class="flex gap-2">
           <button onclick="changeQty(${item.id},-1)" class="bg-gray-300 text-sm px-1 rounded"><i class="fa-solid fa-minus"></i></button>
           <button onclick="changeQty(${item.id},1)" class="bg-gray-300 text-sm px-1 rounded"><i class="fa-solid fa-plus"></i></button>
@@ -204,17 +202,14 @@ function updateCart() {
       </div>
     `;
   });
-
   totalEl.innerText = total;
   localStorage.setItem("cart", JSON.stringify(cart));
 }
 // remove Items
 function removeItem(id) {
   if (!confirm("Are you sure you want to remove this item?")) return;
-
-  cart = cart.filter(i => i.id !== id);
+  cart = cart.filter((i) => i.id !== id);
   localStorage.setItem("cart", JSON.stringify(cart));
-
   const btn = document.querySelector(`.add-to-cart[data-id="${id}"]`);
   if (btn) {
     btn.innerText = "Add to cart";
@@ -233,7 +228,7 @@ window.changeQty = function (id, value) {
   }
   if (item.qty <= 0) {
     cart = cart.filter((p) => p.id != id);
-  }
+  }   
   updateCart();
   updateCartCount();
 };
