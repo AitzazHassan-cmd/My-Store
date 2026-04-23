@@ -1,77 +1,16 @@
-let products = [
-  {
-    id: 1,
-    name: "Laptop",
-    price: "$550",
-    category: "Electronics",
-    Image: "images/laptop.jpg",
-  },
-  {
-    id: 2,
-    name: "Bag",
-    price: "$150",
-    category: "Fashion",
-    Image: "images/bag.jpg",
-  },
-  {
-    id: 3,
-    name: "BagPack",
-    price: "$170",
-    category: "Fashion",
-    Image: "images/bagpack.jpg",
-  },
-  {
-    id: 4,
-    name: "clothes",
-    price: "$210",
-    category: "Fashion",
-    Image: "images/clothes.jpg",
-  },
-  {
-    id: 5,
-    name: "Gaming Mouse",
-    price: "$50",
-    category: "Electronics",
-    Image: "images/gammingmouse.jpg",
-  },
-  {
-    id: 6,
-    name: "Jursey",
-    price: "$30",
-    category: "Fashion",
-    Image: "images/jursey.jpg",
-  },
-  {
-    id: 7,
-    name: "Keyboard",
-    price: "$70",
-    category: "Electronics",
-    Image: "images/keyboard.jpg",
-  },
-  {
-    id: 8,
-    name: "Laptop Dell",
-    price: "$450",
-    category: "Electronics",
-    Image: "images/laptop2.jpg",
-  },
-  {
-    id: 9,
-    name: "Shirt",
-    price: "$20",
-    category: "Fashion",
-    Image: "images/shirts.jpg",
-  },
-];
+document.addEventListener("DOMContentLoaded", () => {
+  updateCartButtons();
+  AddToCart();
+  updateCartCount();
+});
+var cart = JSON.parse(localStorage.getItem("cart") || [] );
 let allProducts = [...products];
 const container = document.getElementById("container");
 function ShowProducts(productsli) {
   let fragment = document.createDocumentFragment();
-  container.innerHTML = "";
 
   if (productsli.length === 0) {
-    container.innerHTML = `
-      <p class="text-center font-bold text-2xl">No Product Found</p>`;
+    notFound(container);
   } else {
     productsli.forEach((product) => {
       const card = document.createElement("div");
@@ -104,14 +43,26 @@ searchInput.addEventListener("keyup", function () {
   if (filtered.length > 0) {
     ShowProducts(filtered);
   } else {
-    container.innerHTML = `
-      <p class="text-center font-bold text-2xl">No Product Found</p>
-    `;
+    notFound(container);
   }
   updateCartButtons();
 });
-function sort(value) {
+function notFound(container) {
+  container.innerHTML = `
+    <p class="text-center font-bold text-2xl">
+      No Product Found
+    </p>
+  `;
+}
+function hello() {
   emptySearch();
+  ShowProducts(allProducts);
+  updateCartButtons();
+  AddToCart();
+  updateCartButtons();
+  updateCartCount();
+}
+function sort(value) {
   if (value === "all") {
     allProducts = [...products];
   } else {
@@ -122,9 +73,7 @@ function sort(value) {
         dir,
     );
   }
-
-  ShowProducts(allProducts);
-  updateCartButtons();
+  hello();
 }
 function emptySearch() {
    const searchIn = document.getElementById("searchInput");
@@ -137,12 +86,11 @@ function Category(catvalue) {
       (product) => product.category === selectedCat.value,
     );
   } else {
-    filetred = [...products];
+    allProducts = [...products];
   }
-  emptySearch();
-  ShowProducts(allProducts);
-  updateCartButtons();
+ hello();
 }
+
 function toggleCart() {
   document.getElementById("cart").classList.toggle("translate-x-full");
 }
@@ -150,7 +98,6 @@ function updateCartCount() {
   document.getElementById("cart-count").innerText = cart.length;
 }
 function updateCartButtons() {
-  let cart = JSON.parse(localStorage.getItem("cart"));
   document.querySelectorAll(".add-to-cart").forEach((btn) => {
     let id = Number(btn.dataset.id);
     if (cart.includes(id) || cart.find((item) => item.id === id)) {
@@ -160,12 +107,6 @@ function updateCartButtons() {
     }
   });
 }
-document.addEventListener("DOMContentLoaded", () => {
-  updateCartButtons();
-  updateCart();
-  updateCartCount();
-});
-let cart = JSON.parse(localStorage.getItem("cart"));
 document.addEventListener("click", (e) => {
   const btn = e.target.closest(".add-to-cart");
   if (!btn) return;
@@ -174,12 +115,10 @@ document.addEventListener("click", (e) => {
   const exists = cart.find((i) => i.id == btn.dataset.id);
   exists ? exists.qty++ : cart.push({ ...item, qty: 1 });
   localStorage.setItem("cart", JSON.stringify(cart));
-  updateCart();
-  updateCartCount();
-  updateCartButtons();
+  hello();
   alert("Added to cart");
 });
-function updateCart() {
+function AddToCart() {
   const cartItems = document.getElementById("cart-items");
   const totalEl = document.getElementById("total");
   cartItems.innerHTML = "";
@@ -216,8 +155,7 @@ function removeItem(id) {
     btn.classList.remove("cursor-not-allowed", "opacity-50");
     btn.disabled = false;
   }
-  updateCart();
-  updateCartCount();
+   hello();
 }
 window.changeQty = function (id, value) {
   let item = cart.find((p) => p.id == id);
@@ -229,7 +167,25 @@ window.changeQty = function (id, value) {
   if (item.qty <= 0) {
     cart = cart.filter((p) => p.id != id);
   }   
-  updateCart();
-  updateCartCount();
+  hello();
 };
 ShowProducts(products);
+// Difference between let var const
+// VAR
+// var x = 10;
+// var x = 20;  (redeclare)
+// x = 30;  (update)
+
+// LET
+
+// let x = 10;
+// // let x = 20; (can't redeclare)
+// x = 30; // (update)
+
+
+//  CONST
+
+// const x = 10;
+// const x = 20;  Error (can't redeclare)
+// x = 30;  Error (can't update)
+
