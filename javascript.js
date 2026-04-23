@@ -24,7 +24,7 @@ function ShowProducts(productsli) {
 
   <button
     data-id="${product.id}"
-    class=" add-to-cart mt-3 bg-green-500 text-white px-4 py-2 rounded w-full">
+    class=" add-to-cart cursor-pointer mt-3 bg-green-500 text-white px-4 py-2 rounded w-full">
     Add to Cart
   </button>
 `;
