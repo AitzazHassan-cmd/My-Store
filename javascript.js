@@ -3,21 +3,22 @@ document.addEventListener("DOMContentLoaded", () => {
   AddToCart();
   updateCartCount();
 });
-var cart = JSON.parse(localStorage.getItem("cart") || [] );
+var cart = JSON.parse(localStorage.getItem("cart") || 0 );
 let allProducts = [...products];
-const container = document.getElementById("container");
+const CONTAINER = document.getElementById("container");
 function ShowProducts(productsli) {
   let fragment = document.createDocumentFragment();
+  CONTAINER.innerHTML = "";
 
   if (productsli.length === 0) {
-    notFound(container);
+    notFound(CONTAINER);
   } else {
     productsli.forEach((product) => {
-      const card = document.createElement("div");
-      card.dataset.id = product.id;
-      card.className =
+      const CARD = document.createElement("div");
+      CARD.dataset.id = product.id;
+      CARD.className =
         "one bg-white p-4 rounded shadow cursor-pointer product hover:translate-y-[-8px] transition-all duration-150";
-      card.innerHTML = `
+      CARD.innerHTML = `
       <img src="${product.Image}" class="w-full mb-3 size-48 object-cover">
      <h2 class="text-lg font-bold product-name">${product.name}</h2>
      <p class="text-gray-600">${product.price}</p>
@@ -28,27 +29,27 @@ function ShowProducts(productsli) {
     Add to Cart
   </button>
 `;
-      fragment.appendChild(card);
+      fragment.appendChild(CARD);
     });
-    container.appendChild(fragment);
+    CONTAINER.appendChild(fragment);
   }
 }
 //search trem
-const searchInput = document.getElementById("searchInput");
-searchInput.addEventListener("keyup", function () {
-  const value = searchInput.value.toLowerCase();
-  const filtered = products.filter((product) =>
-    product.name.toLowerCase().includes(value),
+const SEARCHIP = document.getElementById("searchInput");
+SEARCHIP.addEventListener("keyup", function () {
+  const VALUE = SEARCHIP.value.toLowerCase();
+  const FILTERED = products.filter((product) =>
+    product.name.toLowerCase().includes(VALUE),
   );
-  if (filtered.length > 0) {
-    ShowProducts(filtered);
+  if (FILTERED.length > 0) {
+    ShowProducts(FILTERED);
   } else {
-    notFound(container);
+    notFound(CONTAINER);
   }
   updateCartButtons();
 });
-function notFound(container) {
-  container.innerHTML = `
+function notFound(CONTAINER) {
+  CONTAINER.innerHTML = `
     <p class="text-center font-bold text-2xl">
       No Product Found
     </p>
@@ -58,37 +59,34 @@ function hello() {
   emptySearch();
   ShowProducts(allProducts);
   updateCartButtons();
-  AddToCart();
-  updateCartButtons();
-  updateCartCount();
 }
 function sort(value) {
   if (value === "all") {
     allProducts = [...products];
   } else {
-    const dir = value === "Low-to-Heigh" ? 1 : -1;
+    const DIR = value === "Low-to-Heigh" ? 1 : -1;
     allProducts.sort(
       (a, b) =>
         (Number(a.price.replace("$", "")) - Number(b.price.replace("$", ""))) *
-        dir,
+        DIR,
     );
   }
   hello();
 }
 function emptySearch() {
-   const searchIn = document.getElementById("searchInput");
-   searchIn.value = "";
+   const SEARCHIPUNT = document.getElementById("searchInput");
+   SEARCHIPUNT.value = "";
 }
-const selectedCat = document.getElementById("Categories");
-function Category(catvalue) {
-  if (catvalue.value !== "All") {
+function Category(value) {
+  if (value !== "All") {
     allProducts = products.filter(
-      (product) => product.category === selectedCat.value,
+      product => product.category === value
     );
   } else {
     allProducts = [...products];
   }
- hello();
+
+  hello();
 }
 
 function toggleCart() {
@@ -108,26 +106,27 @@ function updateCartButtons() {
   });
 }
 document.addEventListener("click", (e) => {
-  const btn = e.target.closest(".add-to-cart");
-  if (!btn) return;
-  const item = products.find((p) => p.id == btn.dataset.id);
+  const BTN = e.target.closest(".add-to-cart");
+  if (!BTN) return;
+  const item = products.find((p) => p.id == BTN.dataset.id);
   if (!item) return;
-  const exists = cart.find((i) => i.id == btn.dataset.id);
-  exists ? exists.qty++ : cart.push({ ...item, qty: 1 });
+  const EXISTS = cart.find((i) => i.id == BTN.dataset.id);
+  EXISTS ? EXISTS.qty++ : cart.push({ ...item, qty: 1 });
   localStorage.setItem("cart", JSON.stringify(cart));
+  AddToCart();
   hello();
   alert("Added to cart");
 });
 function AddToCart() {
-  const cartItems = document.getElementById("cart-items");
-  const totalEl = document.getElementById("total");
-  cartItems.innerHTML = "";
+  const CARTITEMS = document.getElementById("cart-items");
+  const TOTALEL = document.getElementById("total");
+  CARTITEMS.innerHTML = "";
   let total = 0,totalQty = 0;
   cart.forEach((item) => {
   const price = item.price.replace("$", "");
     total += price * item.qty;
     totalQty += item.qty;
-    cartItems.innerHTML += `
+    CARTITEMS.innerHTML += `
       <div class="flex justify-between items-center border p-2 rounded mb-2">
         <div>
           <p class="font-bold">${item.name}</p>
@@ -141,21 +140,23 @@ function AddToCart() {
       </div>
     `;
   });
-  totalEl.innerText = total;
+  TOTALEL.innerText = total;
   localStorage.setItem("cart", JSON.stringify(cart));
+  updateCartCount();
 }
 // remove Items
 function removeItem(id) {
   if (!confirm("Are you sure you want to remove this item?")) return;
   cart = cart.filter((i) => i.id !== id);
   localStorage.setItem("cart", JSON.stringify(cart));
-  const btn = document.querySelector(`.add-to-cart[data-id="${id}"]`);
-  if (btn) {
-    btn.innerText = "Add to cart";
-    btn.classList.remove("cursor-not-allowed", "opacity-50");
-    btn.disabled = false;
+  const BTN = document.querySelector(`.add-to-cart[data-id="${id}"]`);
+  if (BTN) {
+    BTN.innerText = "Add to cart";
+    BTN.classList.remove("cursor-not-allowed", "opacity-50");
+    BTN.disabled = false;
   }
-   hello();
+ AddToCart();
+  updateCartCount();
 }
 window.changeQty = function (id, value) {
   let item = cart.find((p) => p.id == id);
@@ -167,7 +168,8 @@ window.changeQty = function (id, value) {
   if (item.qty <= 0) {
     cart = cart.filter((p) => p.id != id);
   }   
-  hello();
+  AddToCart();
+  updateCartCount();
 };
 ShowProducts(products);
 // Difference between let var const
