@@ -16,36 +16,43 @@ function ShowProducts(productsli) {
       const CARD = document.createElement("div");
       CARD.dataset.id = product.id;
       CARD.className =
-        "one bg-white p-4 rounded shadow cursor-pointer product";
+        "one bg-white p-4 rounded-md shadow-xl cursor-pointer product";
       CARD.innerHTML = `
-      <img src="${product.Image}" class="w-full mb-3 size-48 object-cover">
+      <img src="${product.Image}" class="w-full mb-3 h-52 object-cover">
      <h2 class="text-lg font-bold product-name">${product.name}</h2>
      <p class="text-gray-600">${product.price}</p>
 
   <button
     data-id="${product.id}"
-    class=" add-to-cart cursor-pointer mt-3 bg-green-500 text-white px-4 py-2 rounded w-full">
+    class=" add-to-cart cursor-pointer mt-3 bg-black text-white text-white px-4 py-2 rounded w-full">
     Add to Cart
   </button>
 `;
+     CARD.querySelector("img").onclick = () => openModal(product);
       fragment.appendChild(CARD);
     });
     CONTAINER.appendChild(fragment);
   }
 }
+// Open Model
+function openModal(product) {
+  document.getElementById("modalTitle").innerText = product.name;
+  document.getElementById("modalPrice").innerText = product.price;
+  document.getElementById("modalImg").src = product.Image;
+
+  const modal = document.getElementById("modal");
+  modal.classList.remove("hidden");
+  modal.classList.add("flex");
+}
+// close model
+  function closeModal() {
+    document.getElementById("modal").classList.add("hidden");
+  }
 //search trem
 const SEARCHIP = document.getElementById("searchInput");
 SEARCHIP.addEventListener("keyup", function () {
-  const VALUE = SEARCHIP.value.toLowerCase();
-  const FILTERED = products.filter((product) =>
-    product.name.toLowerCase().includes(VALUE),
-  );
-  if (FILTERED.length > 0) {
-    ShowProducts(FILTERED);
-  } else {
-    notFound(CONTAINER);
-  }
-  updateCartButtons();
+  currentSearch = this.value.toLowerCase();
+  applyFilters();
 });
 function notFound(CONTAINER) {
   CONTAINER.innerHTML = `
@@ -55,37 +62,55 @@ function notFound(CONTAINER) {
   `;
 }
 function hello() {
-  emptySearch();
   ShowProducts(allProducts);
   updateCartButtons();
 }
 function sort(value) {
-  if (value === "all") {
-    allProducts = [...products];
-  } else {
-    const DIR = value === "Low-to-Heigh" ? 1 : -1;
-    allProducts.sort(
-      (a, b) =>
-        (Number(a.price.replace("$", "")) - Number(b.price.replace("$", ""))) *
-        DIR,
+  currentSort = value;
+  hello();
+  emptySearch();
+  applyFilters();
+}
+let currentSearch = "",currentCategory = "All",currentSort = "all";
+function applyFilters() {
+  let result = [...products];
+  // 1. category
+  if (currentCategory !== "All") {
+    result = result.filter(p => p.category === currentCategory);
+  }
+
+  // 2. search
+  if (currentSearch !== "") {
+    result = result.filter(p =>
+      p.name.toLowerCase().includes(currentSearch)
     );
   }
-  hello();
+
+  // 3. SORT 
+  if (currentSort !== "all") {
+    const dir = currentSort === "Low-to-Heigh" ? 1 : -1;
+
+    result = result.sort((a, b) => {
+      const priceA = Number(a.price.replace("$", ""));
+      const priceB = Number(b.price.replace("$", ""));
+      return (priceA - priceB) * dir;
+    });
+  }
+
+  allProducts = result;
+
+  ShowProducts(result);
+  updateCartButtons();
 }
 function emptySearch() {
    const SEARCHIPUNT = document.getElementById("searchInput");
    SEARCHIPUNT.value = "";
 }
 function Category(value) {
-  if (value !== "All") {
-    allProducts = products.filter(
-      product => product.category === value
-    );
-  } else {
-    allProducts = [...products];
-  }
-
+  currentCategory = value;
   hello();
+  emptySearch();
+  applyFilters();
 }
 
 function toggleCart() {
@@ -174,14 +199,15 @@ ShowProducts(products);
 // Difference between let var const
 // VAR
 // var x = 10;
-// var x = 20;  redeclare
-// x = 30;  update
+// var x = 20;  can be redeclared
+// x = 30;  you can update its value also
+// console.log(x);
 
 // LET
 
 // let x = 10;
 // // let x = 20; can't redeclare
-// x = 30; // update
+// x = 30;  update
 
 
 //  CONST

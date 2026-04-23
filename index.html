@@ -10,7 +10,7 @@
 </head>
 
 <body>
-    <header class="w-full h-14 shadow-lg flex justify-between items-center">
+    <header class="w-full h-14 shadow-xl flex bg-white justify-between items-center">
         <h1 class="text-2xl font-bold ml-2 max-sm:text-xl max-md:text-xl">My Shop</h1>
         <input type="text" id="searchInput" placeholder="Search..."
             class="ml-4 max-sm:w-28  max-md:w-44 border-b outline-none h-8">
@@ -43,7 +43,7 @@
             Cart (<span id="cart-count">0</span>)
         </button>
     </header>
-    <section class="p-6 grid lg:grid-cols-4 sm:grid-cols-2 md:grid-cols-3 gap-6" id="container">
+    <section class="p-2 grid lg:grid-cols-4 sm:grid-cols-2  md:grid-cols-3 gap-6" id="container">
 
     </section>
 
@@ -62,8 +62,21 @@
         <button onclick="toggleCart()" class="mt-4 w-full bg-red-500 text-white py-2 rounded">
             Close
         </button>
-
     </div>
+    <!-- Model -->
+  <div id="modal" class="fixed inset-0 hidden justify-center items-center backdrop-blur-sm z-50 bg-black/20">
+
+  <div class="bg-white/80 backdrop-blur-sm p-6 rounded-lg w-80 relative">
+    
+    <button onclick="closeModal()" class="absolute top-2 right-2 text-2xl">&times;</button>
+    
+    <img id="modalImg" class="w-full mb-3 h-64 object-cover">
+    <h2 id="modalTitle" class="text-xl font-bold mb-2"></h2>
+    <p id="modalPrice" class="font-bold  mb-3"></p>
+
+
+  </div>
+</div>
      <script src="products.js"></script>
     <script src="javascript.js"></script>
 </body>
