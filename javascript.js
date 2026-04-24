@@ -129,8 +129,8 @@ function updateCartCount() {
 }
 function updateCartButtons() {
   document.querySelectorAll(".add-to-cart").forEach((btn) => {
-    let id = btn.dataset.id;
-    if (cart.find((item) => String(item.id) === id)) {
+    let id = Number(btn.dataset.id);
+    if (cart.find((item) => item.id === id)) {
       btn.innerText = "Added";
       btn.classList.add("cursor-not-allowed", "opacity-50");
       btn.disabled = true;
