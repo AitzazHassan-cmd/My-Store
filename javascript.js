@@ -2,10 +2,32 @@ document.addEventListener("DOMContentLoaded", () => {
   updateCartButtons();
   AddToCart();
   updateCartCount();
+  loadProducts();
 });
-var cart = JSON.parse(localStorage.getItem("cart") || 0 );
-let allProducts = [...products];
+var cart = JSON.parse(localStorage.getItem("cart") || 0);
 const CONTAINER = document.getElementById("container");
+let products = [];
+let allProducts = [];
+async function loadProducts() {
+  try {
+    Loading(CONTAINER); 
+    const DATA = await fetch("./products.json");
+    products = await DATA.json();
+    allProducts = [...products];
+    if (allProducts.length === 0) {
+      notFound(CONTAINER);
+    } else {
+      ShowProducts(allProducts);
+    }
+  } catch (error) {
+    notFound(CONTAINER);
+  }
+}
+function Loading(container) {
+  container.innerHTML = `
+      <p class="text-lg text-center font-semibold">Loading...</p>
+  `;
+}
 function ShowProducts(productsli) {
   let fragment = document.createDocumentFragment();
   CONTAINER.innerHTML = "";
@@ -20,15 +42,15 @@ function ShowProducts(productsli) {
       CARD.innerHTML = `
       <img src="${product.Image}" class="w-full mb-3 h-52 object-cover">
      <h2 class="text-lg font-bold product-name">${product.name}</h2>
-     <p class="text-gray-600">${product.price}</p>
+     <p class="text-gray-600">$${product.price}</p>
 
   <button
     data-id="${product.id}"
-    class=" add-to-cart cursor-pointer mt-3 bg-black text-white text-white px-4 py-2 rounded w-full">
     Add to Cart
+    class=" add-to-cart cursor-pointer mt-3 bg-black text-white text-white px-4 py-2 rounded w-full">
   </button>
 `;
-     CARD.querySelector("img").onclick = () => openModal(product);
+      CARD.querySelector("img").onclick = () => openModal(product);
       fragment.appendChild(CARD);
     });
     CONTAINER.appendChild(fragment);
@@ -45,9 +67,9 @@ function openModal(product) {
   modal.classList.add("flex");
 }
 // close model
-  function closeModal() {
-    document.getElementById("modal").classList.add("hidden");
-  }
+function closeModal() {
+  document.getElementById("modal").classList.add("hidden");
+}
 //search trem
 const SEARCHIP = document.getElementById("searchInput");
 SEARCHIP.addEventListener("keyup", function () {
@@ -58,6 +80,13 @@ function notFound(CONTAINER) {
   CONTAINER.innerHTML = `
     <p class="text-center font-bold text-2xl">
       No Product Found
+    </p>
+  `;
+}
+function Loading(CONTAINER) {
+  CONTAINER.innerHTML = `
+    <p class="text-center font-bold text-2xl">
+     Loading ... 
     </p>
   `;
 }
@@ -74,25 +103,23 @@ function sort(value) {
 let currentSearch = "",currentCategory = "All",currentSort = "all";
 function applyFilters() {
   let result = [...products];
-  // 1. category
+  // category
   if (currentCategory !== "All") {
-    result = result.filter(p => p.category === currentCategory);
+    result = result.filter((p) => p.category === currentCategory);
   }
 
-  // 2. search
+  //  search
   if (currentSearch !== "") {
-    result = result.filter(p =>
-      p.name.toLowerCase().includes(currentSearch)
-    );
+    result = result.filter((p) => p.name.toLowerCase().includes(currentSearch));
   }
 
-  // 3. SORT 
+  //  SORT
   if (currentSort !== "all") {
     const dir = currentSort === "Low-to-Heigh" ? 1 : -1;
 
     result = result.sort((a, b) => {
-      const priceA = Number(a.price.replace("$", ""));
-      const priceB = Number(b.price.replace("$", ""));
+      const priceA = Number(a.price);
+      const priceB = Number(b.price);
       return (priceA - priceB) * dir;
     });
   }
@@ -103,8 +130,8 @@ function applyFilters() {
   updateCartButtons();
 }
 function emptySearch() {
-   const SEARCHIPUNT = document.getElementById("searchInput");
-   SEARCHIPUNT.value = "";
+  const SEARCHIPUNT = document.getElementById("searchInput");
+  SEARCHIPUNT.value = "";
 }
 function Category(value) {
   currentCategory = value;
@@ -145,9 +172,10 @@ function AddToCart() {
   const CARTITEMS = document.getElementById("cart-items");
   const TOTALEL = document.getElementById("total");
   CARTITEMS.innerHTML = "";
-  let total = 0,totalQty = 0;
+  let total = 0,
+    totalQty = 0;
   cart.forEach((item) => {
-  const price = item.price.replace("$", "");
+    const price = item.price;
     total += price * item.qty;
     totalQty += item.qty;
     CARTITEMS.innerHTML += `
@@ -168,21 +196,24 @@ function AddToCart() {
   localStorage.setItem("cart", JSON.stringify(cart));
   updateCartCount();
 }
-// remove Items
-function removeItem(id) {
-  if (!confirm("Are you sure you want to remove this item?")) return;
-  cart = cart.filter((i) => i.id !== id);
-  localStorage.setItem("cart", JSON.stringify(cart));
+function resetAddToCartButton(id) {
   const BTN = document.querySelector(`.add-to-cart[data-id="${id}"]`);
   if (BTN) {
     BTN.innerText = "Add to cart";
     BTN.classList.remove("cursor-not-allowed", "opacity-50");
     BTN.disabled = false;
   }
- AddToCart();
+}
+// remove Items
+function removeItem(id) {
+  if (!confirm("Are you sure you want to remove this item?")) return;
+  cart = cart.filter((i) => i.id !== id);
+  localStorage.setItem("cart", JSON.stringify(cart));
+  resetAddToCartButton(id);
+  AddToCart();
   updateCartCount();
 }
-window.changeQty = function (id, value) {
+ function changeQty(id, value) {
   let item = cart.find((p) => p.id == id);
   if (!item) {
     return;
@@ -191,11 +222,12 @@ window.changeQty = function (id, value) {
   }
   if (item.qty <= 0) {
     cart = cart.filter((p) => p.id != id);
-  }   
+    resetAddToCartButton(id);
+  }
+
   AddToCart();
   updateCartCount();
 };
-ShowProducts(products);
 // Difference between let var const
 // VAR
 // var x = 10;
@@ -208,7 +240,6 @@ ShowProducts(products);
 // let x = 10;
 // // let x = 20; can't redeclare
 // x = 30;  update
-
 
 //  CONST
 
