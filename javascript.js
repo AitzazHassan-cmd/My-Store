@@ -1,10 +1,11 @@
 document.addEventListener("DOMContentLoaded", () => {
-  cart = JSON.parse(localStorage.getItem("cart")) || [];
+   cart = JSON.parse(localStorage.getItem("cart")) || [];
 
   updateCartCount();
   AddToCart();
   loadProducts();
 });
+let cart = JSON.parse(localStorage.getItem("cart")) || [];
 let products = [];
 let allProducts = [];
 async function loadProducts() {
@@ -62,7 +63,7 @@ function openModal(product) {
 function closeModal() {
   document.getElementById("modal").classList.add("hidden");
 }
-//search trem
+//search 
 const SEARCHIP = document.getElementById("searchInput");
 SEARCHIP.addEventListener("keyup", function () {
   currentSearch = this.value.toLowerCase();
