@@ -19,7 +19,6 @@ async function loadProducts() {
     console.log(error);
   }
 }
-  let cart = JSON.parse(localStorage.getItem("cart")) || [];
 const CONTAINER = document.getElementById("container");
 function ShowProducts(productsli) {
   let fragment = document.createDocumentFragment();
@@ -39,7 +38,7 @@ function ShowProducts(productsli) {
 
   <button
     data-id="${product.id}"
-    class=" add-to-cart cursor-pointer mt-3 bg-black text-white text-white px-4 py-2 rounded w-full">
+    class=" add-to-cart cursor-pointer mt-3 bg-black text-white  px-4 py-2 rounded w-full">
     Add to Cart
   </button>
 `;
@@ -76,13 +75,8 @@ function notFound() {
     </p>
   `;
 }
-function hello() {
-  ShowProducts(allProducts);
-  updateCartButtons();
-}
 function sort(value) {
   currentSort = value;
-  hello();
   emptySearch();
   applyFilters();
 }
@@ -123,7 +117,6 @@ function emptySearch() {
 }
 function Category(value) {
   currentCategory = value;
-  hello();
   emptySearch();
   applyFilters();
 }
@@ -153,15 +146,14 @@ document.addEventListener("click", (e) => {
   EXISTS ? EXISTS.qty++ : cart.push({ ...item, qty: 1 });
   localStorage.setItem("cart", JSON.stringify(cart));
   AddToCart();
-  hello();
+  updateCartButtons();
   alert("Added to cart");
 });
 function AddToCart() {
   const CARTITEMS = document.getElementById("cart-items");
   const TOTALEL = document.getElementById("total");
   CARTITEMS.innerHTML = "";
-  let total = 0,
-    totalQty = 0;
+  let total = 0,totalQty = 0;
   cart.forEach((item) => {
     const price = item.price;
     total += price * item.qty;
