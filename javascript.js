@@ -52,7 +52,7 @@ function ShowProducts(productsli) {
 // Open Model
 function openModal(product) {
   document.getElementById("modalTitle").innerText = product.name;
-  document.getElementById("modalPrice").innerText = product.price;
+  document.getElementById("modalPrice").innerText = `$${product.price}`;
   document.getElementById("modalImg").src = product.Image;
 
   const modal = document.getElementById("modal");
