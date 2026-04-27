@@ -2,7 +2,6 @@ document.addEventListener("DOMContentLoaded", () => {
    cart = JSON.parse(localStorage.getItem("cart")) || [];
 
   updateCartCount();
-  AddToCart();
   loadProducts();
 });
 let cart = JSON.parse(localStorage.getItem("cart")) || [];
@@ -33,7 +32,8 @@ function ShowProducts(productsli) {
       CARD.className =
         "one bg-white p-4 rounded-md shadow-xl cursor-pointer product";
       CARD.innerHTML = `
-      <img src="${product.Image}" class="w-full mb-3 h-52 object-cover">
+     <img src="${product.Image}" 
+     class="w-full h-52 object-cover object-center rounded-lg transition duration-300 hover:scale-105">
      <h2 class="text-lg font-bold product-name">${product.name}</h2>
      <p class="text-gray-600">$${product.price}</p>
 
@@ -137,7 +137,7 @@ function updateCartButtons() {
       btn.disabled = true;
     }
   });
-}
+ }
 document.addEventListener("click", (e) => {
   const BTN = e.target.closest(".add-to-cart");
   if (!BTN) return;
@@ -146,70 +146,11 @@ document.addEventListener("click", (e) => {
   const EXISTS = cart.find((i) => i.id == BTN.dataset.id);
   EXISTS ? EXISTS.qty++ : cart.push({ ...item, qty: 1 });
   localStorage.setItem("cart", JSON.stringify(cart));
-  AddToCart();
+  updateCartCount();
   updateCartButtons();
   alert("Added to cart");
 });
-function AddToCart() {
-  const CARTITEMS = document.getElementById("cart-items");
-  const TOTALEL = document.getElementById("total");
-  CARTITEMS.innerHTML = "";
-  let total = 0,totalQty = 0;
-  cart.forEach((item) => {
-    const price = item.price;
-    total += price * item.qty;
-    totalQty += item.qty;
-    CARTITEMS.innerHTML += `
-      <div class="flex justify-between items-center border p-2 rounded mb-2">
-        <div>
-          <p class="font-bold">${item.name}</p>
-          <p>${item.price} x ${item.qty}</p>
-        </div>
-        <div class="flex gap-2">
-          <button onclick="changeQty(${item.id},-1)" class="bg-gray-300 text-sm px-1 rounded"><i class="fa-solid fa-minus"></i></button>
-          <button onclick="changeQty(${item.id},1)" class="bg-gray-300 text-sm px-1 rounded"><i class="fa-solid fa-plus"></i></button>
-          <button onclick="removeItem(${item.id})" class="bg-gray-300 text-sm px-1 rounded"><i class="fa-solid fa-xmark"></i></button>
-        </div>
-      </div>
-    `;
-  });
-  TOTALEL.innerText = total;
-  localStorage.setItem("cart", JSON.stringify(cart));
-  updateCartCount();
-}
-// remove Items
-function removeItem(id) {
-  if (!confirm("Are you sure you want to remove this item?")) return;
-  cart = cart.filter((i) => i.id !== id);
-  localStorage.setItem("cart", JSON.stringify(cart));
-  const BTN = document.querySelector(`.add-to-cart[data-id="${id}"]`);
-  if (BTN) {
-    BTN.innerText = "Add to Cart";
-    BTN.classList.remove("cursor-not-allowed", "opacity-50");
-    BTN.disabled = false;
-  }
-  AddToCart();
-  updateCartCount();
-}
-function changeQty(id, value) {
-  let item = cart.find((p) => p.id == id);
-  if (!item) {
-    return;
-  } else {
-    item.qty += value;
-  }
-  if (item.qty <= 0) {
-    cart = cart.filter((p) => p.id != id);
-     const BTN = document.querySelector(`.add-to-cart[data-id="${id}"]`);
-     if (BTN) {
-    BTN.innerText = "Add to Cart";
-    BTN.classList.remove("cursor-not-allowed", "opacity-50");
-    BTN.disabled = false;
-  }
-  }
-  AddToCart();
-  updateCartCount();
-};
+
 // Difference between let var const
 // VAR
 // var x = 10;
