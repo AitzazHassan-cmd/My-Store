@@ -8,6 +8,15 @@ function AddToCart() {
 
   CARTITEMS.innerHTML = "";
 
+  if (cart.length === 0) {
+    CARTITEMS.innerHTML = `
+      <div class="text-center py-10 font-bold  text-2xl text-gray-500">
+         Your cart is empty
+      </div>
+    `;
+    TOTALEL.innerText = "0";
+    return;
+  }
   let total = 0;
 
   cart.forEach((item) => {
@@ -66,16 +75,12 @@ function changeQty(id, value) {
 
   if (!item) return;
 
-  item.qty += value;
-
-  if (item.qty <= 0) {
-    if (!confirm("Remove this item?")) return;
-    cart = cart.filter((p) => p.id != id);
+  if (value === -1 && item.qty === 1) {
+    return;
   }
 
-  localStorage.setItem("cart", JSON.stringify(cart));
+  item.qty += value;
 
+  localStorage.setItem("cart", JSON.stringify(cart));
   AddToCart();
 }
-window.removeItem = removeItem;
-window.changeQty = changeQty;
